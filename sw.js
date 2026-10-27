@@ -1,5 +1,5 @@
 // Cache everything on install so the app works offline.
-var CACHE = "1001albums-v2";
+var CACHE = "1001albums-v3";
 var FILES = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
 for (var i = 0; i < 13; i++) FILES.push("covers/s" + i + ".jpg");
 
@@ -13,6 +13,14 @@ self.addEventListener("activate", function (e) {
 });
 self.addEventListener("fetch", function (e) {
   if (e.request.method !== "GET") return;
+  // The page itself: network first so updates show up, cache when offline.
+  if (e.request.mode === "navigate") {
+    e.respondWith(fetch(e.request).then(function (res) {
+      var copy = res.clone(); caches.open(CACHE).then(function (c) { c.put("index.html", copy); });
+      return res;
+    }).catch(function () { return caches.match("index.html"); }));
+    return;
+  }
   e.respondWith(caches.match(e.request, { ignoreSearch: true }).then(function (r) {
     return r || fetch(e.request).then(function (res) {
       if (res.ok && new URL(e.request.url).origin === location.origin) {
