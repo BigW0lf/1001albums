@@ -1,7 +1,7 @@
 // Cache everything on install so the app works offline.
-var CACHE = "1001albums-v1";
+var CACHE = "1001albums-v2";
 var FILES = ["./", "index.html", "manifest.webmanifest", "icon-192.png", "icon-512.png"];
-for (var i = 0; i < 12; i++) FILES.push("covers/s" + i + ".jpg");
+for (var i = 0; i < 13; i++) FILES.push("covers/s" + i + ".jpg");
 
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); }).then(function () { return self.skipWaiting(); }));
